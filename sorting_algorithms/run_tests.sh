@@ -7,7 +7,7 @@ echo "=========================================="
 
 # 编译
 echo "编译中..."
-g++ -std=c++17 -o sort main.cpp
+g++ -std=c++17 -I include -o sort main.cpp
 if [ $? -ne 0 ]; then
     echo "编译失败!"
     exit 1
@@ -15,7 +15,7 @@ fi
 echo "编译成功!"
 echo ""
 
-# 测试用例数组
+# 测试用例
 declare -a test_names=(
     "基本整数排序"
     "已排序数组"
@@ -27,6 +27,10 @@ declare -a test_names=(
     "字符排序"
     "字符串排序"
     "大数据量"
+    "跨行输入"
+    "单字符数字(按字符排序)"
+    "错误处理-数据不足"
+    "错误处理-无效n值"
 )
 
 declare -a test_inputs=(
@@ -40,6 +44,10 @@ declare -a test_inputs=(
     "5\ne d c b a"
     "4\nbanana apple cherry date"
     "10\n100 23 45 67 89 12 34 56 78 90"
+    "5\n1\n2\n3\n4\n5"
+    "5\n3 1 4 2 5"
+    "5\n1 2 3"
+    "-1\n1 2 3"
 )
 
 declare -a expected_outputs=(
@@ -53,6 +61,10 @@ declare -a expected_outputs=(
     "a b c d e"
     "apple banana cherry date"
     "12 23 34 45 56 67 78 89 90 100"
+    "1 2 3 4 5"
+    "1 2 3 4 5"
+    "ERROR"
+    "ERROR"
 )
 
 passed=0
@@ -64,38 +76,35 @@ for i in "${!test_names[@]}"; do
     echo "----------------------------------------"
     
     # 运行测试
-    output=$(echo -e "${test_inputs[$i]}" | ./sort)
-    
-    # 检查每种排序算法的输出
+    output=$(echo -e "${test_inputs[$i]}" | ./sort 2>&1)
+    exit_code=$?
     expected="${expected_outputs[$i]}"
     
-    # 验证所有7种排序结果
-    all_correct=true
-    while IFS= read -r line; do
-        if [[ "$line" == "$expected" ]]; then
-            continue
-        elif [[ "$line" == *"Sort"* ]]; then
-            continue
+    if [ "$expected" == "ERROR" ]; then
+        # 期望错误的测试用例
+        if [ $exit_code -ne 0 ]; then
+            echo "✓ 通过 (正确检测到错误)"
+            ((passed++))
         else
-            if [[ -n "$line" ]]; then
-                all_correct=false
-            fi
+            echo "✗ 失败 (应该报错但没有)"
+            echo "输出: $output"
+            ((failed++))
         fi
-    done <<< "$output"
-    
-    # 简单验证：检查输出中是否包含预期结果7次
-    count=$(echo "$output" | grep -c "^${expected}$" 2>/dev/null || echo "0")
-    
-    if [ "$count" -eq 7 ]; then
-        echo "✓ 通过"
-        ((passed++))
     else
-        echo "✗ 失败"
-        echo "输入: ${test_inputs[$i]}"
-        echo "预期每行排序结果: $expected"
-        echo "实际输出:"
-        echo "$output"
-        ((failed++))
+        # 正常测试用例：检查输出中是否包含预期结果7次
+        count=$(echo "$output" | grep -c "^${expected}$" 2>/dev/null || echo "0")
+        
+        if [ "$count" -eq 7 ]; then
+            echo "✓ 通过"
+            ((passed++))
+        else
+            echo "✗ 失败"
+            echo "输入: ${test_inputs[$i]}"
+            echo "预期每行排序结果: $expected"
+            echo "实际输出:"
+            echo "$output"
+            ((failed++))
+        fi
     fi
     echo ""
 done

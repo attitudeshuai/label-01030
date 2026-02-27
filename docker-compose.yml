@@ -4,6 +4,9 @@ services:
       context: ./sorting_algorithms
       dockerfile: Dockerfile
     container_name: sorting-algorithms
+    # 交互式运行配置：程序启动后需手动输入数据
+    # 输入格式：第一行输入 n（数据个数），第二行输入 n 个数据（空格分隔）
+    # 输入完成后按 Ctrl+D (Linux/Mac) 或 Ctrl+Z (Windows) 结束输入
     stdin_open: true
     tty: true
     restart: "no"

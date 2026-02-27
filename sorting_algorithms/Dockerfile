@@ -5,9 +5,10 @@ WORKDIR /app
 
 # 复制源代码
 COPY main.cpp .
+COPY include/ ./include/
 
-# 编译（静态链接避免库版本问题）
-RUN g++ -std=c++17 -O2 -o sort main.cpp
+# 编译
+RUN g++ -std=c++17 -I include -O2 -o sort main.cpp
 
 # 设置入口点
 ENTRYPOINT ["./sort"]
