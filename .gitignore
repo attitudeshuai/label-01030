@@ -1,0 +1,30 @@
+# Compiled binaries
+sorting_algorithms/sort
+sorting_algorithms/sort.exe
+*.o
+*.obj
+*.exe
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/
+
+# Build directories
+build/
+out/
+bin/
+
+# Temporary files
+*.tmp
+*.temp
+*.log

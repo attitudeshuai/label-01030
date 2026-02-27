@@ -1,0 +1,9 @@
+services:
+  sorting-algorithms:
+    build:
+      context: ./sorting_algorithms
+      dockerfile: Dockerfile
+    container_name: sorting-algorithms
+    stdin_open: true
+    tty: true
+    restart: "no"
