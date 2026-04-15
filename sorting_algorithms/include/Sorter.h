@@ -211,7 +211,7 @@ public:
         // 逐个提取元素
         for (int i = n - 1; i > 0; i--) {
             swapElements(arr[0], arr[i]);
-            heapify(arr, i, 0);
+            heapify(arr, n, 0);
         }
         Logger::debug("堆排序完成");
         return arr;
